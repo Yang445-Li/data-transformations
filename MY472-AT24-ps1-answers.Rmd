@@ -1,0 +1,154 @@
+---
+title: "MY472: Practice Problem Set Solutions"
+author: "LSE Candidate Number: 202409085"
+date: "Autumn Term 2024"
+output: html_document
+---
+
+```{r setup, include=FALSE} 
+# this chunk contains code that sets global options for the entire .Rmd. 
+# we use include=FALSE to suppress it from the top of the document, but it will still appear in the appendix. 
+
+knitr::opts_chunk$set(echo = FALSE) # actually set the global chunk options. 
+# we set echo=FALSE to suppress code such that it by default does not appear throughout the document. 
+# note: this is different from .Rmd default
+```
+
+This document contains the necessary commands and layout to meet the formatting requirements for MY472. You should use this file as the basis for your own answers to the assigned exercises.
+
+**As you see fit, you may delete the instructions/examples that we include in this file. Please *do not* delete: (1) the header at the top between the dashed lines, (2) the first chunk of R code above, (3) the Evaluation section or (4) the Appendix section. Please also put your LSE candidate number in the "author" line at the top of this file. Do not include any personally identifying information in your Submission Repo, except for your LSE candidate number.**
+
+## Evaluation
+
+_This section will be completed by the marker. Please do not edit it._
+
+| Exercise | Mark | Comments |
+|:---|:---|:----------------------|
+| 1 | N/A | |
+| 2 | N/A | |
+| 3 | N/A | |
+| 4 | N/A | |
+
+Note: there are no marks awarded on this formative assignment.
+
+## Appendix: All code in this assignment
+
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE} 
+# this chunk generates the complete code appendix. 
+# eval=FALSE tells R not to run (``evaluate'') the code here (it was already run before).
+```
+
+## Exercise 1
+
+My public repository can be found at https://github.com/Yang445-Li/data-transformations.git.
+
+## Exercise 2
+
+```{r}
+data(mtcars)
+head(mtcars)
+```
+Analysis: The mtcars dataset is "tidy", since 
+(a) each column represents a different variable (e.g., mpg, cyl, disp, etc.). 
+(b) each row represents a different car, which is an observation. 
+(c) each variable is in its own column.
+
+Create the untidy version in the wide format
+
+```{r}
+library(dplyr)
+library(tidyr)
+mtcars_wide <- mtcars %>%
+  select(mpg, cyl, disp, hp) %>%
+  pivot_wider(names_from = mpg, values_from = c(cyl, disp, hp), values_fill = NA)
+head(mtcars_wide)
+```
+
+Analysis:
+This version is "untidy". Because there are even 75 columns and only one row, which is not easy to observe. Also, the various variables of all cars are jumbled together, making it impossible to distinguish between them.
+
+## Exercise 3
+
+Choose the "pressure" dataset.
+
+Original dataset:
+```{r}
+data(pressure)
+head(pressure)
+```
+
+Transform dataset:
+
+```{r}
+library(dplyr)
+
+# Transform the pressure dataset
+pressure_transformed <- pressure %>%
+  group_by(temperature) %>%  # Group by temperature
+  summarise(
+    avg_pressure = mean(pressure),  # Calculate average pressure
+    avg_pressure_squared = mean(pressure^2)  # Calculate average of the squared pressure
+  ) %>%
+  mutate(total_pressure = avg_pressure * n())  # Calculate total pressure for each temperature
+
+# Display the transformed dataset
+head(pressure_transformed)
+```
+Discuss new information:
+(a) Pressure characteristics at different temperatures: By calculating the average pressure and the average of the squared pressure at each temperature, we can easily understand how pressure changes with temperature.
+(b) Total pressure: the total_pressure gives us an overall distribution of pressure under different temperature conditions.
+
+## Exercise 4
+
+```{r}
+
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+
+path_to_folder <- "/Users/liyang/Desktop/GY476_data/"
+polls <- read.csv(paste0(path_to_folder, "president_polls.csv"))
+
+# Convert end_date to date format
+polls$end_date <- as.Date(polls$end_date, format="%m/%d/%Y")
+
+# Choose specific dates and candidates
+filtered_polls <- polls %>%
+  filter(end_date >= as.Date("2024-08-01") & 
+         end_date <= as.Date("2024-10-17") & 
+         (answer == "Trump" | answer == "Harris")) %>%
+  mutate(answer = factor(answer, levels = c("Harris", "Trump"))) 
+
+# Create the plot using 'answer' as the y variable
+ggplot(filtered_polls, aes(x = end_date, y = answer, color = answer)) +
+  geom_jitter(size = 2, alpha = 0.7, width = 0.1) +  # Jittered points for individual poll results
+  geom_smooth(method = "loess", se = FALSE, size = 1.2) +  # Smoothed line for trends
+  scale_color_manual(values = c("Harris" = "#1f77b4", "Trump" = "#d62728")) + 
+  labs(title = "2024 U.S. Presidential Election National Polling Results",
+       x = "Date",
+       y = "Polling Result",  
+       color = "Candidate") +
+  theme_minimal(base_size = 15) +  
+  theme(panel.grid.major = element_line(color = "gray80"),  
+        panel.grid.minor = element_blank(),  
+        plot.title = element_text(hjust = 0.5),  
+        legend.position = "top") +  
+  xlim(as.Date("2024-08-01"), as.Date("2024-10-17")) +  
+  ylim(-20, 20)  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
