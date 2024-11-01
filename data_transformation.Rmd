@@ -30,6 +30,19 @@ transform_data <- function(data) {
 transform_data(mtcars)
 ```
 
+```{r}
+# Second data transformation function
+filter_data <- function(data) {
+    # Keep only rows where mpg is greater than 20
+    result <- subset(data, mpg > 20)
+    return(result)
+}
+
+# Test the second function
+filter_data(mtcars)
+
+```
+
 ## Including Plots
 You can also embed plots, for example:
 
